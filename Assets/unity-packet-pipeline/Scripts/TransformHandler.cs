@@ -19,6 +19,11 @@ public class TransformHandler : MonoBehaviour {
     Vector3 receivedPosition;
     Vector3 receivedEulerRot;
 
+    float receivedFov;
+    bool receivedRecording;
+
+    public Camera linkedCam;
+
     // Use this for initialization
     void Start () {
 
@@ -47,6 +52,9 @@ public class TransformHandler : MonoBehaviour {
             case NPP_Types.CLIENTS.Receive:
                 transform.position = receivedPosition + Vector3.right * 2;
                 transform.rotation = Quaternion.Euler(receivedEulerRot);
+
+                linkedCam.fieldOfView = receivedFov;
+
                 break;
 
             case NPP_Types.CLIENTS.SendReceive:
@@ -72,7 +80,7 @@ public class TransformHandler : MonoBehaviour {
         System.Buffer.BlockCopy(a_buffer, 0, buffer, 1, a_buffer.Length);
 
         // Send packet
-        udpClient.SendPacket(buffer, new IPEndPoint(IPAddress.Broadcast, 3000));
+        udpClient.SendPacket(buffer, new IPEndPoint(IPAddress.Parse(remoteAddress), 3000));
     }
 
     protected void SendMessage(NPP_Types.MESSAGES a_type, string a_buffer)
@@ -88,6 +96,12 @@ public class TransformHandler : MonoBehaviour {
     protected void SendTransform(Transform a_transform)
     {
         SendMessage(NPP_Types.MESSAGES.Data, a_transform.position.ToString("G5") + ':' + a_transform.rotation.eulerAngles.ToString("G5"));
+    }
+
+    protected void SendCamera(Camera a_camera, bool a_isRecording)
+    {
+        int recordingVal = (a_isRecording) ? 1 : 0;
+        SendMessage(NPP_Types.MESSAGES.Data, a_camera.transform.position.ToString("G5") + ':' + a_camera.transform.rotation.eulerAngles.ToString("G5") + ':' + a_camera.fieldOfView + ':' + recordingVal);
     }
 
     void ReceiveMessage(byte[] a_buffer, IPEndPoint a_remote)
@@ -112,8 +126,18 @@ public class TransformHandler : MonoBehaviour {
         Vector3 position = NPP_Utils.StringToVector3(transformComponents[0]);
         Vector3 rotation = NPP_Utils.StringToVector3(transformComponents[1]);
 
-        receivedPosition = position;
-        receivedEulerRot = rotation;
+        if (transformComponents.Length > 2)
+        {
+
+            float fov = float.Parse(transformComponents[2]);
+            bool isRecording = bool.Parse(transformComponents[3]);
+
+            receivedPosition = position;
+            receivedEulerRot = rotation;
+
+            receivedFov = fov;
+            receivedRecording = isRecording;
+        }
     }
 
 
