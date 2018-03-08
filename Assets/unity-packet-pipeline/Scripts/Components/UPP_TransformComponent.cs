@@ -2,39 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UPP_TransformComponent : UPP_Component {
 
-    Vector3 receivedPos;
-    Vector3 receivedRot;
-    
-    protected override void Update()
+namespace UnityPacketPipeline
+{
+    /**
+     *  Name: UPP_TransformComponent
+     *  
+     *  Auth: Ben Skiner
+     *  Date: 8/03/18
+     *  Desc: Extends UPP Component and handles sending and receiving of position and rotation.
+     */
+    public class UPP_TransformComponent : UPP_Component
     {
-        base.Update();
 
-        if (clientType == UPP_Types.CLIENT_TYPE.Receive)
+        // -- Overriden internal functionality
+
+        public override string StringifyData()
         {
-            transform.position = receivedPos;
-            transform.rotation = Quaternion.Euler(receivedRot);
+            base.StringifyData();
+
+            return UPP_Utils.Vector3ToString(transform.position) + ":" + UPP_Utils.Vector3ToString(transform.rotation.eulerAngles);
         }
-    }
 
+        public override void ParseData(string a_data)
+        {
+            base.ParseData(a_data);
 
-    protected override void SendData()
-    {
-        base.SendData();
+            string[] splitComps = a_data.Split(':');
 
-        string msg = transform.position.ToString("G5") + ":" + transform.rotation.eulerAngles.ToString("G5");
-
-        UPP_Manager.MainUPPManager.SendComponent(this, msg);
-    }
-
-    public override void ReceiveData(string a_data)
-    {
-        base.ReceiveData(a_data);
-
-        string[] splitComps = a_data.Split(':');
-
-        receivedPos = UPP_Utils.StringToVector3(splitComps[0]);
-        receivedRot = UPP_Utils.StringToVector3(splitComps[1]);
+            transform.position = UPP_Utils.StringToVector3(splitComps[0]);
+            transform.rotation = Quaternion.Euler(UPP_Utils.StringToVector3(splitComps[1]));
+        }
     }
 }
