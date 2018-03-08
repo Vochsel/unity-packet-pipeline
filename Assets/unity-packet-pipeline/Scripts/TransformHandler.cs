@@ -10,7 +10,7 @@ public class TransformHandler : MonoBehaviour {
 
     UDPSocket udpClient;
 
-    public NPP_Types.CLIENTS clientType;
+    public UPP_Types.CLIENT_TYPE clientType;
 
     IPEndPoint remote;
     public string remoteAddress = "127.0.0.1";
@@ -22,16 +22,14 @@ public class TransformHandler : MonoBehaviour {
     float receivedFov;
     bool receivedRecording;
 
-    public Camera linkedCam;
-
     // Use this for initialization
     void Start () {
 
-        bool shouldListen = (clientType == NPP_Types.CLIENTS.SendReceive || clientType == NPP_Types.CLIENTS.Receive) ? true : false;
+        bool shouldListen = (clientType == UPP_Types.CLIENT_TYPE.Receive) ? true : false;
 
         remote = new IPEndPoint(IPAddress.Parse(remoteAddress), remotePort);
 
-        udpClient = new UDPSocket(shouldListen);
+        udpClient = new UDPSocket();
         udpClient.ReceivePacketHook += ReceiveMessage;
 
         //SendMessage(NPP_Types.MESSAGES.Connection, (byte)clientType);
@@ -45,29 +43,20 @@ public class TransformHandler : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         switch (clientType) {
-            case NPP_Types.CLIENTS.Send:
+            case UPP_Types.CLIENT_TYPE.Send:
                 SendTransform(transform);
 
                 break;
-            case NPP_Types.CLIENTS.Receive:
+            case UPP_Types.CLIENT_TYPE.Receive:
                 transform.position = receivedPosition + Vector3.right * 2;
                 transform.rotation = Quaternion.Euler(receivedEulerRot);
 
-                linkedCam.fieldOfView = receivedFov;
 
-                break;
-
-            case NPP_Types.CLIENTS.SendReceive:
-
-                SendTransform(transform);
-
-                transform.position = receivedPosition;
-                transform.rotation = Quaternion.Euler(receivedEulerRot);
                 break;
         }
     }
 
-    protected void SendMessage(NPP_Types.MESSAGES a_type, byte[] a_buffer)
+    protected void SendMessage(UPP_Types.MESSAGES a_type, byte[] a_buffer)
     {
         // Create message buffer
         byte[] buffer = new byte[1 + a_buffer.Length];
@@ -80,40 +69,40 @@ public class TransformHandler : MonoBehaviour {
         System.Buffer.BlockCopy(a_buffer, 0, buffer, 1, a_buffer.Length);
 
         // Send packet
-        udpClient.SendPacket(buffer, new IPEndPoint(IPAddress.Parse(remoteAddress), 3000));
+       // udpClient.SendPacket(buffer, new IPEndPoint(IPAddress.Parse(remoteAddress), remotePort));
     }
 
-    protected void SendMessage(NPP_Types.MESSAGES a_type, string a_buffer)
+    protected void SendMessage(UPP_Types.MESSAGES a_type, string a_buffer)
     {
         SendMessage(a_type, Encoding.UTF8.GetBytes(a_buffer));
     }
 
-    protected void SendMessage(NPP_Types.MESSAGES a_type, byte a_buffer)
+    protected void SendMessage(UPP_Types.MESSAGES a_type, byte a_buffer)
     {
         SendMessage(a_type, new byte[] { a_buffer });
     }
 
     protected void SendTransform(Transform a_transform)
     {
-        SendMessage(NPP_Types.MESSAGES.Data, a_transform.position.ToString("G5") + ':' + a_transform.rotation.eulerAngles.ToString("G5"));
+        SendMessage(UPP_Types.MESSAGES.Data, a_transform.position.ToString("G5") + ':' + a_transform.rotation.eulerAngles.ToString("G5"));
     }
 
     protected void SendCamera(Camera a_camera, bool a_isRecording)
     {
         int recordingVal = (a_isRecording) ? 1 : 0;
-        SendMessage(NPP_Types.MESSAGES.Data, a_camera.transform.position.ToString("G5") + ':' + a_camera.transform.rotation.eulerAngles.ToString("G5") + ':' + a_camera.fieldOfView + ':' + recordingVal);
+        SendMessage(UPP_Types.MESSAGES.Data, a_camera.transform.position.ToString("G5") + ':' + a_camera.transform.rotation.eulerAngles.ToString("G5") + ':' + a_camera.fieldOfView + ':' + recordingVal);
     }
 
     void ReceiveMessage(byte[] a_buffer, IPEndPoint a_remote)
     {
-       NPP_Types.MESSAGES messageType = (NPP_Types.MESSAGES )a_buffer[0];
+       UPP_Types.MESSAGES messageType = (UPP_Types.MESSAGES )a_buffer[0];
 
         string messageData = Encoding.UTF8.GetString(a_buffer, 1, a_buffer.Length - 1);
         //string messageData = Encoding.UTF8.GetString(a_buffer);
 
         switch (messageType)
         {
-            case NPP_Types.MESSAGES.Data:
+            case UPP_Types.MESSAGES.Data:
                 ReceiveTransformAsString(messageData);
                 break;
         }
@@ -123,8 +112,8 @@ public class TransformHandler : MonoBehaviour {
     {
         string[] transformComponents = a_transform.Split(':');
 
-        Vector3 position = NPP_Utils.StringToVector3(transformComponents[0]);
-        Vector3 rotation = NPP_Utils.StringToVector3(transformComponents[1]);
+        Vector3 position = UPP_Utils.StringToVector3(transformComponents[0]);
+        Vector3 rotation = UPP_Utils.StringToVector3(transformComponents[1]);
 
         if (transformComponents.Length > 2)
         {

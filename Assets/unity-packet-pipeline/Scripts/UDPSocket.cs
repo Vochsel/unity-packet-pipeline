@@ -21,13 +21,16 @@ public class UDPSocket {
 
     bool isListening = false;
 
-    public UDPSocket(bool a_shouldListen, string a_address = "localhost", uint a_port = 0)
+    public UDPSocket(string a_remoteAddress = "127.0.0.1", int a_listenPort = 0)
     {
-        if (a_shouldListen)
-        {
-            StartListening();
-        }
+        receiveSocket = new UdpClient(a_listenPort);
         sendSocket = new UdpClient();
+        sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
+
+        Debug.Log("Rece Socket: " + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Port);
+        Debug.Log("Send Socket: " + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Port);
+
+        StartListening();
     }
 
     public void Close()
@@ -41,29 +44,14 @@ public class UDPSocket {
         if (receiveSocket != null) receiveSocket.Close();
     }
 
-    public void SendPacket(byte[] a_buffer, IPEndPoint a_remote)
-    {
-        if(receiveSocket != null) {
-            receiveSocket.Send(a_buffer, a_buffer.Length, a_remote);
-            Debug.Log("Receive sock: sent data");
-        }
-        else if(sendSocket != null) {
-            
-            sendSocket.Send(a_buffer, a_buffer.Length, a_remote);
-           // Debug.Log("Send sock: sent data: " + Encoding.UTF8.GetString(a_buffer));
-        }
-    }
-
-    public void BroadcastPacket(byte[] a_buffer, int a_port) 
-    {
-        IPEndPoint broadcastIP = new IPEndPoint(IPAddress.Broadcast, 0);
-        SendPacket(a_buffer, broadcastIP);
+    public void SendPacket(byte[] a_buffer)
+    {            
+        sendSocket.Send(a_buffer, a_buffer.Length);
     }
 
     public void StartListening()
     {
         Debug.Log("Starting listening");
-        receiveSocket = new UdpClient(3000);
         if (receiveSocket.Client.LocalEndPoint != null)
         {
             Debug.Log("Listening: " + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Port);
@@ -81,22 +69,19 @@ public class UDPSocket {
         Debug.Log("Listening");
         while (isListening)
         {
-           // Debug.Log("Looping");
+            Debug.Log("Looping");
             try
             {
-                
-                if (receiveSocket.Client.LocalEndPoint == null) continue;
-                
-
+                //IP Of sender... could be anyone
                 IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
                 byte[] data = receiveSocket.Receive(ref anyIP);
                 
-               // Debug.Log("Rece sock: rece data: " + Encoding.UTF8.GetString(data));
+                //Debug.Log("Rece sock: rece data: " + Encoding.UTF8.GetString(data));
                 
                 OnReceivePacket(data, anyIP);
-                //Thread.Sleep(10);
+                Thread.Sleep(1);
             }
-            catch (SocketException err)
+            catch (Exception err)
             {
                 Debug.Log(err.ToString());
             }

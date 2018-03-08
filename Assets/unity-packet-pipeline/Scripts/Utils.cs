@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct NPP_Utils
+public struct UPP_Utils
 {
     public static Vector3 StringToVector3(string sVector)
     {

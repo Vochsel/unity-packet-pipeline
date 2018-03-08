@@ -1,5 +1,5 @@
 ﻿
-namespace NPP_Types
+namespace UPP_Types
 {
     public enum MESSAGES : byte
     {
@@ -8,10 +8,9 @@ namespace NPP_Types
         Disconnection = 0x02,
     }
 
-    public enum CLIENTS : byte
+    public enum CLIENT_TYPE : byte
     {
-        SendReceive = 0x00,
-        Send = 0x01,
-        Receive = 0x02
+        Send = 0x00,
+        Receive = 0x01
     }
 }
