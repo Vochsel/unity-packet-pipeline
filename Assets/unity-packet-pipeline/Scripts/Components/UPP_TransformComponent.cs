@@ -13,7 +13,7 @@ public class UPP_TransformComponent : UPP_Component {
 
         if (clientType == UPP_Types.CLIENT_TYPE.Receive)
         {
-            transform.position = receivedPos + Vector3.right * 2;
+            transform.position = receivedPos;
             transform.rotation = Quaternion.Euler(receivedRot);
         }
     }
