@@ -23,7 +23,7 @@ public class UPP_TransformComponent : UPP_Component {
     {
         base.SendData();
 
-        string msg = transform.position.ToString() + ":" + transform.rotation.eulerAngles.ToString();
+        string msg = transform.position.ToString("G5") + ":" + transform.rotation.eulerAngles.ToString("G5");
 
         UPP_Manager.MainUPPManager.SendComponent(this, msg);
     }

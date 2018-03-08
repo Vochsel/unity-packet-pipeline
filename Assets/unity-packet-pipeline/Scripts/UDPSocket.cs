@@ -79,7 +79,7 @@ public class UDPSocket {
                 //Debug.Log("Rece sock: rece data: " + Encoding.UTF8.GetString(data));
                 
                 OnReceivePacket(data, anyIP);
-                Thread.Sleep(1);
+                //Thread.Sleep(1);
             }
             catch (Exception err)
             {
