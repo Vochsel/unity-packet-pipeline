@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
-
+using System;
 
 namespace UnityPacketPipeline
 {
@@ -96,27 +96,35 @@ namespace UnityPacketPipeline
 			base.ListenCallback ();
 			Socket sc = receiveSocket.AcceptSocket ();
 			receiveStream = new NetworkStream (sc);
-			while (isListening)
+
+            byte[] bytes = new byte[1024];
+
+            while (isListening)
 			{
+               // using(NetworkStream stream = receiveStream)
 				//try
 				{
 					//TcpClient cc = receiveSocket.AcceptTcpClient ();
 
+                    int length;
+					while((length = receiveStream.Read(bytes, 0, bytes.Length)) != 0)
+                    {
+                        byte[] incomingData = new byte[length];
+                        Array.Copy(bytes, 0, incomingData, 0, length);
 
+                        string msg = Encoding.ASCII.GetString(incomingData);
+                        OnReceivePacket(incomingData, null);
 
-					byte[] buffer = new byte[128];
-					int responseLength = receiveStream.Read(buffer, 0, 128);
-					receiveStream.Read (buffer, 0, 128);
-					//Debug.Log (Encoding.UTF8.GetString(buffer, 1, buffer.Length - 1));
+                    }
+                    //Debug.Log (Encoding.UTF8.GetString(buffer, 1, buffer.Length - 1));
 
-					/*NetworkStream stream = new NetworkStream(receiveSocket);
+                    /*NetworkStream stream = new NetworkStream(receiveSocket);
 					byte[] buffer = new byte[128];
 					int responseLength = stream.Read(buffer, 0, 128);
 					Debug.Log(buffer);*/
-					//receiveSock
-					OnReceivePacket(buffer, null);
-					//Thread.Sleep(10);
-				}
+                    //receiveSock
+                    //Thread.Sleep(10);
+                }
 			}
 		}
 	}
