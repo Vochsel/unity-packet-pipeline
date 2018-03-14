@@ -36,14 +36,16 @@ namespace UnityPacketPipeline
 		{
 			base.Open(a_remoteAddress, a_listenPort);
 
+
+
 			try {
 				// Create clients
-				receiveSocket = new TcpListener(IPAddress.Parse("127.0.0.1"), 3001);
+				receiveSocket = new TcpListener(IPAddress.Any, a_listenPort);
 				receiveSocket.Start();
 				StartListening();
 
 				sendSocket = new TcpClient ();
-				sendSocket.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3001));
+				sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
 				sendStream = sendSocket.GetStream();
 			} catch(SocketException e) {
 				Debug.Log ("Could not create sockets");
