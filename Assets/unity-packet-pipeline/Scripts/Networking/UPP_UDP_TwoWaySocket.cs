@@ -10,9 +10,6 @@ using System.Threading;
 
 namespace UnityPacketPipeline
 {
-    // Delegate on packet received
-    public delegate void ReceivePacketDelegate(byte[] a_buffer, IPEndPoint a_remote);
-
     /**
      *  Name: UPP_UDP_TwoWaySocket
      *
@@ -20,22 +17,15 @@ namespace UnityPacketPipeline
      *  Date: 8/03/18
      *  Desc: Handles send and receiving of socket data between two connections
      */
-    public class UPP_UDP_TwoWaySocket
+	public class UPP_UDP_TwoWaySocket : UPP_Base_TwoWaySocket
     {
         // -- Internal variables
-        Thread receiveThread;
 
         // UDP Client to send packets to specified IP and PORT
         UdpClient sendSocket = null;
 
         // UDP Client to receive packets at specified PORT
         UdpClient receiveSocket = null;
-
-        // Instance of delegate fired when packet received
-        public ReceivePacketDelegate ReceivePacketHook;
-
-        // Bool which controls if the connection is listening
-        bool isListening = false;
 
         // -- Constructor
 
@@ -49,8 +39,10 @@ namespace UnityPacketPipeline
         // -- Connection Functionality
 
         // Opens two way connection. Sends data to remote ADDRESS and PORT. Listens on PORT
-        public void Open(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000)
+		public override void Open(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000)
         {
+			base.Open(a_remoteAddress, a_listenPort);
+
             // Create clients
             receiveSocket = new UdpClient(a_listenPort);
             sendSocket = new UdpClient();
@@ -67,8 +59,10 @@ namespace UnityPacketPipeline
         }
 
         // Correctly closes sockets and stops thread
-        public void Close()
+		public override void Close()
         {
+			base.Close ();
+
             // Stop listening thread
             StopListening();
 
@@ -80,8 +74,10 @@ namespace UnityPacketPipeline
         // -- Sending Functionality
 
         // Send packet
-        public void SendPacket(byte[] a_buffer)
+        public override void SendPacket(byte[] a_buffer)
         {
+			base.OnSendPacket (a_buffer);
+
             sendSocket.Send(a_buffer, a_buffer.Length);
 
             OnSendPacket(a_buffer);
@@ -89,35 +85,11 @@ namespace UnityPacketPipeline
 
         // -- Listening Functionality
 
-        // Handle thread startup
-        private void StartListening()
-        {
-            Debug.Log("Starting listening");
-
-            // Create thread
-            receiveThread = new Thread(new ThreadStart(ListenCallback));
-            receiveThread.IsBackground = true;
-
-            // Start thread
-            receiveThread.Start();
-            isListening = true;
-        }
-
-        // Handle thread closing
-        private void StopListening()
-        {
-            if (receiveThread != null && receiveThread.IsAlive)
-            {
-                isListening = false;
-                receiveThread.Abort();
-            }
-        }
-
         // Handle listening
-        private void ListenCallback()
+		protected override void ListenCallback()
         {
-            OnListening();
-            Debug.Log("Listening");
+			base.ListenCallback ();
+
             while (isListening)
             {
                 try
@@ -138,16 +110,6 @@ namespace UnityPacketPipeline
             }
         }
 
-        // -- Callbacks
-
-        // Called when connection starts listening
-        protected virtual void OnListening() { }
-
-        // Called when connection sends packet
-        protected virtual void OnSendPacket(byte[] a_buffer) { }
-
-        // Called when connection receives packet
-        protected virtual void OnReceivePacket(byte[] a_buffer, IPEndPoint a_remote) { ReceivePacketHook(a_buffer, a_remote); }
     }
 
 }

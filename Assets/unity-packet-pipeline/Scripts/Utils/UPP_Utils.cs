@@ -17,11 +17,12 @@ namespace UnityPacketPipeline
 
         public static Vector3 StringToVector3(string a_vector)
         {
-            // Remove the parentheses
-            if (a_vector.StartsWith("(") && a_vector.EndsWith(")"))
-            {
-                a_vector = a_vector.Substring(1, a_vector.Length - 2);
-            }
+			Debug.Log (a_vector);
+
+			a_vector = a_vector.Replace ("(", "");
+			a_vector = a_vector.Replace (")", "");
+
+			Debug.Log (a_vector);
 
             // split the items
             string[] sArray = a_vector.Split(',');

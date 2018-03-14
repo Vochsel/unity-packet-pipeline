@@ -11,6 +11,13 @@ using System;
 
 namespace UnityPacketPipeline
 {
+	[System.Serializable]
+	public enum UPP_PacketProtocol
+	{
+		UDP,
+		TCP
+	}
+
     /**
     *  Name: UPP_Manager
     *
@@ -28,6 +35,9 @@ namespace UnityPacketPipeline
 
         // -- public Manager Settings
 
+		// Packet protocol to use
+		public UPP_PacketProtocol Protocol;
+
         // Remote IP of upp connection
         public string RemoteIP = "127.0.0.1";
 
@@ -37,7 +47,7 @@ namespace UnityPacketPipeline
         // -- Private Member Variables
 
         // UDP Socket used for communication
-        UPP_UDP_TwoWaySocket twoWaySocket;
+        UPP_Base_TwoWaySocket twoWaySocket;
 
         // All components in the scene to track
         UPP_Component[] trackedComponents;
@@ -54,7 +64,16 @@ namespace UnityPacketPipeline
             trackedComponents = FindObjectsOfType<UPP_Component>();
 
             // Setup network connection
-            twoWaySocket = new UPP_UDP_TwoWaySocket(RemoteIP, Port);
+			switch (Protocol) {
+				
+				case UPP_PacketProtocol.TCP:
+					twoWaySocket = new UPP_TCP_TwoWaySocket (RemoteIP, Port);
+					break;
+
+				default: case UPP_PacketProtocol.UDP:
+					twoWaySocket = new UPP_UDP_TwoWaySocket (RemoteIP, Port);
+					break;
+			}
 
             // Register callback on packet received
             twoWaySocket.ReceivePacketHook += ReceiveMessage;
@@ -63,7 +82,8 @@ namespace UnityPacketPipeline
         // Clean up network connection
         void OnApplicationQuit()
         {
-            twoWaySocket.Close();
+			if(twoWaySocket != null)
+            	twoWaySocket.Close();
         }
 
         // -- Public Utility Functions
