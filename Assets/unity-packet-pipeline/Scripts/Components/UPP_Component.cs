@@ -16,7 +16,7 @@ namespace UnityPacketPipeline
     {
         // -- Internal Protected Variables
 
-        private string latestMessage = "";
+        protected string latestMessage = "";
 
         // -- Public Variables
 
@@ -34,19 +34,16 @@ namespace UnityPacketPipeline
         // Virtual protected Unity Update event
         protected virtual void Update()
         {
-            if (clientType == CLIENT_TYPE.Send)
-                SendData(StringifyData());
-            else if (clientType == CLIENT_TYPE.Receive && latestMessage.Length > 0)
-                ParseData(latestMessage);
+			
         }
 
         // -- Internal Functions
 
         // Send Data Function
-        private void SendData(string a_data) { UPP_Manager.MainUPPManager.SendComponent(this, a_data); }
+		protected virtual void SendData(string a_data) { UPP_Manager.MainUPPManager.SendComponent(this, a_data); }
 
         // Called when data recevied on this component
-        public void ReceiveData(string a_data) { latestMessage = a_data; }
+		public virtual void ReceiveData(string a_data) { latestMessage = a_data; }
 
         // -- Virtual Functions
 

@@ -113,7 +113,7 @@ namespace UnityPacketPipeline
 					byte[] buffer = new byte[128];
 					int responseLength = stream.Read(buffer, 0, 128);
 					Debug.Log(buffer);*/
-
+					//receiveSock
 					OnReceivePacket(buffer, null);
 					//Thread.Sleep(10);
 				}

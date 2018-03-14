@@ -27,6 +27,16 @@ namespace UnityPacketPipeline
             localCamera = GetComponent<Camera>();
         }
 
+		protected override void Update ()
+		{
+			base.Update ();
+
+			if (clientType == CLIENT_TYPE.Send)
+				SendData(StringifyData());
+			else if (clientType == CLIENT_TYPE.Receive && latestMessage.Length > 0)
+				ParseData(latestMessage);
+		}
+
         // -- Overriden functions
 
         public override string StringifyData()

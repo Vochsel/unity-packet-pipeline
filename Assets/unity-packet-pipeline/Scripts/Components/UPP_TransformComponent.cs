@@ -14,6 +14,15 @@ namespace UnityPacketPipeline
      */
     public class UPP_TransformComponent : UPP_Component
     {
+		protected override void Update ()
+		{
+			base.Update ();
+
+			if (clientType == CLIENT_TYPE.Send)
+				SendData(StringifyData());
+			else if (clientType == CLIENT_TYPE.Receive && latestMessage.Length > 0)
+				ParseData(latestMessage);
+		}
 
         // -- Overriden internal functionality
 
