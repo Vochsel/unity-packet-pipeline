@@ -17,6 +17,8 @@ namespace UnityPacketPipeline
         // -- Internal Protected Variables
 
         protected string latestMessage = "";
+	
+		protected UPP_Manager connectedManager;
 
         // -- Public Variables
 
@@ -32,18 +34,23 @@ namespace UnityPacketPipeline
         protected virtual void Start() { }
 
         // Virtual protected Unity Update event
-        protected virtual void Update()
-        {
-			
-        }
+        protected virtual void Update() { }
 
         // -- Internal Functions
 
         // Send Data Function
-		protected virtual void SendData(string a_data) { UPP_Manager.MainUPPManager.SendComponent(this, a_data); }
+		protected virtual void SendData(string a_data) { connectedManager.SendComponent(this, a_data); }
 
         // Called when data recevied on this component
 		public virtual void ReceiveData(string a_data) { latestMessage = a_data; }
+
+		public void Connect(UPP_Manager a_manager) {
+			connectedManager = a_manager;
+		}
+
+		public bool IsConnected() {
+			return connectedManager != null;
+		}
 
         // -- Virtual Functions
 

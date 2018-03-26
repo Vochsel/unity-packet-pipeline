@@ -31,7 +31,7 @@ namespace UnityPacketPipeline
 		{
 			base.Update ();
 
-			if (clientType == CLIENT_TYPE.Send)
+			if (clientType == CLIENT_TYPE.Send && IsConnected())
 				SendData(StringifyData());
 			else if (clientType == CLIENT_TYPE.Receive && latestMessage.Length > 0)
 				ParseData(latestMessage);

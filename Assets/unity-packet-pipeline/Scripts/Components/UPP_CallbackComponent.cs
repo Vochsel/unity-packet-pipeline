@@ -28,6 +28,9 @@ namespace UnityPacketPipeline
 
 		public void InvokeCallback(string a_callbackID, string a_callbackArg = "")
 		{
+			if (!IsConnected ())
+				return;
+			
 			SendData (a_callbackID + ":" + a_callbackArg);
 
 			foreach (UPP_Callback callback in Callbacks) {

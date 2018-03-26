@@ -44,13 +44,15 @@ namespace UnityPacketPipeline
         // Port to both send packets to and listen for packets on
         public int Port = 4000;
 
+		public string AssociatedTag = "";
+		
         // -- Private Member Variables
 
         // UDP Socket used for communication
         UPP_Base_TwoWaySocket twoWaySocket;
 
         // All components in the scene to track
-        UPP_Component[] trackedComponents;
+        List<UPP_Component> trackedComponents;
 
         // -- Unity Events
 
@@ -60,8 +62,28 @@ namespace UnityPacketPipeline
             // Store singleton instance
             MainUPPManager = this;
 
-            // Find all scene UPP_Components
-            trackedComponents = FindObjectsOfType<UPP_Component>();
+			//Populate tracked components
+			if (AssociatedTag.Length > 0) {
+				trackedComponents = new List<UPP_Component> ();
+				GameObject[] gos = GameObject.FindGameObjectsWithTag (AssociatedTag);
+				foreach (GameObject go in gos) {
+					//If has UPP_Component, add
+					if (go.GetComponent<UPP_Component> ()) {
+						trackedComponents.Add (go.GetComponent<UPP_Component> ());
+					}
+				}
+			} else {
+				// Else find all scene UPP_Components
+				trackedComponents = new List<UPP_Component>(FindObjectsOfType<UPP_Component>());
+
+			}
+
+			Debug.LogFormat("Populated with {0} components", trackedComponents.Count);
+
+			//Connect all components to this
+			foreach (UPP_Component uppc in trackedComponents) {
+				uppc.Connect (this);
+			}
 
             // Setup network connection
 			switch (Protocol) {
