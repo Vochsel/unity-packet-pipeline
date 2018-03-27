@@ -69,7 +69,10 @@ namespace UnityPacketPipeline
 				foreach (GameObject go in gos) {
 					//If has UPP_Component, add
 					if (go.GetComponent<UPP_Component> ()) {
-						trackedComponents.Add (go.GetComponent<UPP_Component> ());
+						//Account for multiple on the one object
+						foreach (UPP_Component uppc in go.GetComponents<UPP_Component>()) {
+							trackedComponents.Add (uppc);
+						}
 					}
 				}
 			} else {
@@ -78,7 +81,7 @@ namespace UnityPacketPipeline
 
 			}
 
-			Debug.LogFormat("Populated with {0} components", trackedComponents.Count);
+			Debug.LogFormat("[{0}] Populated with {1} components", this.name, trackedComponents.Count);
 
 			//Connect all components to this
 			foreach (UPP_Component uppc in trackedComponents) {

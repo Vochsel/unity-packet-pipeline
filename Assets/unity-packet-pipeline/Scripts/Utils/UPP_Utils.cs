@@ -17,12 +17,12 @@ namespace UnityPacketPipeline
 
         public static Vector3 StringToVector3(string a_vector)
         {
-			Debug.Log (a_vector);
+			//Debug.Log (a_vector);
 
 			a_vector = a_vector.Replace ("(", "");
 			a_vector = a_vector.Replace (")", "");
 
-			Debug.Log (a_vector);
+			//Debug.Log (a_vector);
 
             // split the items
             string[] sArray = a_vector.Split(',');

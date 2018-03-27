@@ -36,8 +36,6 @@ namespace UnityPacketPipeline
 		{
 			base.Open(a_remoteAddress, a_listenPort);
 
-
-
 			try {
 				// Create clients
 				receiveSocket = new TcpListener(IPAddress.Any, a_listenPort);
@@ -55,8 +53,8 @@ namespace UnityPacketPipeline
 			//sendSocket.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3001));
 
 			// Debug Logs
-			//Debug.Log("Receiving Socket: " + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Port);
-			//Debug.Log("Send Socket: " + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Port);
+			Debug.Log("Receiving Socket: " + ((IPEndPoint)receiveSocket.LocalEndpoint).Address + ":" + ((IPEndPoint)receiveSocket.LocalEndpoint).Port);
+			Debug.Log("Send Socket: " + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Port);
 
 			// Begin listening thread
 
