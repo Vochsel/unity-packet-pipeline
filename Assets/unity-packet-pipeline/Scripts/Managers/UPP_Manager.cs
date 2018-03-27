@@ -62,6 +62,46 @@ namespace UnityPacketPipeline
             // Store singleton instance
             MainUPPManager = this;
 
+			RefreshComponents ();
+			SetupSocket (RemoteIP, Port);
+        }
+
+
+		// Clean up network connection
+		void OnApplicationQuit()
+		{
+			CloseSocket ();
+		}
+
+
+		void SetupSocket(string a_ip, int a_port)
+		{
+			// Setup network connection
+			switch (Protocol) {
+
+			case UPP_PacketProtocol.TCP:
+				twoWaySocket = new UPP_TCP_TwoWaySocket (a_ip, a_port);
+				break;
+
+			default: case UPP_PacketProtocol.UDP:
+				twoWaySocket = new UPP_UDP_TwoWaySocket (a_ip, a_port);
+				break;
+			}
+
+			// Register callback on packet received
+			twoWaySocket.ReceivePacketHook += ReceiveMessage;
+		}
+
+		void CloseSocket()
+		{
+			if(twoWaySocket != null)
+				twoWaySocket.Close();
+		}
+
+		// -- Public Utils
+
+		public void RefreshComponents()
+		{
 			//Populate tracked components
 			if (AssociatedTag.Length > 0) {
 				trackedComponents = new List<UPP_Component> ();
@@ -87,29 +127,13 @@ namespace UnityPacketPipeline
 			foreach (UPP_Component uppc in trackedComponents) {
 				uppc.Connect (this);
 			}
+		}
 
-            // Setup network connection
-			switch (Protocol) {
-				
-				case UPP_PacketProtocol.TCP:
-					twoWaySocket = new UPP_TCP_TwoWaySocket (RemoteIP, Port);
-					break;
-
-				default: case UPP_PacketProtocol.UDP:
-					twoWaySocket = new UPP_UDP_TwoWaySocket (RemoteIP, Port);
-					break;
-			}
-
-            // Register callback on packet received
-            twoWaySocket.ReceivePacketHook += ReceiveMessage;
-        }
-
-        // Clean up network connection
-        void OnApplicationQuit()
-        {
-			if(twoWaySocket != null)
-            	twoWaySocket.Close();
-        }
+		public void ChangeIP (string a_ip)
+		{
+			CloseSocket ();
+			SetupSocket (a_ip, Port);
+		}
 
         // -- Public Utility Functions
 
