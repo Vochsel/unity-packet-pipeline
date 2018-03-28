@@ -12,6 +12,13 @@ using System;
 
 namespace UnityPacketPipeline
 {
+	/**
+	* Name: UPP_PacketProtocl
+	*
+	* Auth: Ben Skinner
+	* Date: 28/03/18
+	* Desc: Enumeration to describe the two currently supported forms of network communication: UDP and TCP
+	*/
 	[System.Serializable]
 	public enum UPP_PacketProtocol
 	{
@@ -19,15 +26,23 @@ namespace UnityPacketPipeline
 		TCP
 	}
 
+
+	/**
+	* Name: OnSetupEvent
+	*
+	* Auth: Ben Skinner
+	* Date: 28/03/18
+	* Desc: Wrapper for manager setup completion
+	*/
 	[System.Serializable]
-	public class OnSetupEvent : UnityEvent<string, string> { }
+	public class OnManagerSetupEvent : UnityEvent<UPP_Base_TwoWaySocket> { }
 
     /**
     *  Name: UPP_Manager
     *
-    *  Auth: Ben Skiner
-    *  Date: 8/03/18
-    *  Desc: Unity component to manage all UPP_Components. Handles send and receive functionality.
+    *  Auth: Ben Skinner
+    *  Date: 28/03/18
+    *  Desc: Unity component to manage tracked UPP_Components. Handles send and receive functionality for trackedComponents.
     */
     public class UPP_Manager : MonoBehaviour
     {
@@ -37,7 +52,7 @@ namespace UnityPacketPipeline
         // Singleton instance
         public static UPP_Manager MainUPPManager;
 
-        // -- public Manager Settings
+        // -- Public Manager Settings
 
 		// Packet protocol to use
 		public UPP_PacketProtocol Protocol;
@@ -48,9 +63,11 @@ namespace UnityPacketPipeline
         // Port to both send packets to and listen for packets on
         public int Port = 4000;
 
+		// If given tag will only search tagged objects for UPP_Components 
 		public string AssociatedTag = "";
 
-		public OnSetupEvent OnSetup;
+		// Event called on manager successfully setup
+		public OnManagerSetupEvent OnSetup;
 		
         // -- Private Member Variables
 
@@ -69,18 +86,18 @@ namespace UnityPacketPipeline
             MainUPPManager = this;
 
 			RefreshComponents ();
-			SetupSocket (RemoteIP, Port);
+			SetupManager (RemoteIP, Port);
         }
-
 
 		// Clean up network connection
 		void OnApplicationQuit()
 		{
-			CloseSocket ();
+			CloseManager ();
 		}
 
+		// -- Lifecycle functionality
 
-		void SetupSocket(string a_ip, int a_port)
+		public void SetupManager(string a_ip, int a_port)
 		{
 			// Setup network connection
 			switch (Protocol) {
@@ -95,22 +112,29 @@ namespace UnityPacketPipeline
 			}
 
 			// Register callback on packet received
-			twoWaySocket.ReceivePacketHook += ReceiveMessage;
+			twoWaySocket.ReceivePacketHook = ReceiveMessage;
 
 			OnSetup.Invoke (twoWaySocket.SendAddress, twoWaySocket.ReceiveAddress);
 		}
 
-		void CloseSocket()
+		public void CloseManager()
 		{
 			if(twoWaySocket != null)
 				twoWaySocket.Close();
 		}
 
-		// -- Public Utils
+		public void RefreshManager() {
+			CloseManager ();
+			SetupManager (RemoteIP, Port);
+		}
 
 		public void RefreshComponents()
 		{
-			//Populate tracked components
+			// Clear old component list
+			if (trackedComponents != null)
+				trackedComponents.Clear ();
+			
+			// Populate tracked components
 			if (AssociatedTag.Length > 0) {
 				trackedComponents = new List<UPP_Component> ();
 				GameObject[] gos = GameObject.FindGameObjectsWithTag (AssociatedTag);
@@ -126,21 +150,20 @@ namespace UnityPacketPipeline
 			} else {
 				// Else find all scene UPP_Components
 				trackedComponents = new List<UPP_Component>(FindObjectsOfType<UPP_Component>());
-
 			}
 
 			Debug.LogFormat("[{0}] Populated with {1} components", this.name, trackedComponents.Count);
 
-			//Connect all components to this
+			// Connect all components to this
 			foreach (UPP_Component uppc in trackedComponents) {
 				uppc.Connect (this);
 			}
 		}
 
-		public void ChangeIP (string a_ip)
+		public void ChangeRemoteIP (string a_ip)
 		{
-			CloseSocket ();
-			SetupSocket (a_ip, Port);
+			RemoteIP = a_ip;
+			RefreshManager();
 		}
 
         // -- Public Utility Functions
@@ -171,12 +194,12 @@ namespace UnityPacketPipeline
         // Receive message callback
         void ReceiveMessage(byte[] a_buffer, IPEndPoint a_remote)
         {
-            SendToListeningComponents(a_buffer);
+            BroadcastMessage(a_buffer);
         }
 
         // Send buffer to listening components
         // TODO: Convert trackedComponents to Map of arrays with ID as key
-        void SendToListeningComponents(byte[] a_buffer)
+        void BroadcastMessage(byte[] a_buffer)
         {
             // Get message comp ID
             int compID = a_buffer[0];
