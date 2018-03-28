@@ -88,6 +88,13 @@ namespace UnityPacketPipeline
 			OnSendPacket(a_buffer);
 		}
 
+		// -- Getters and Setters
+		public override string ReceiveAddress { get { return ((IPEndPoint)receiveSocket.LocalEndpoint).Address.ToString(); }}
+		public override int ReceivePort { get { return ((IPEndPoint)receiveSocket.LocalEndpoint).Port; }}
+
+		public override string SendAddress { get { return ((IPEndPoint)sendSocket.Client.LocalEndPoint).Address.ToString(); }}
+		public override int SendPort { get { return ((IPEndPoint)sendSocket.Client.LocalEndPoint).Port; }}
+
 		// -- Listening Functionality
 
 		// Handle listening

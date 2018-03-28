@@ -71,6 +71,14 @@ namespace UnityPacketPipeline
             if (receiveSocket != null) receiveSocket.Close();
         }
 
+		// -- Getters and Setters
+
+		public override string ReceiveAddress { get { return ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Address.ToString(); }}
+		public override int ReceivePort { get { return ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Port; }}
+
+		public override string SendAddress { get { return ((IPEndPoint)sendSocket.Client.LocalEndPoint).Address.ToString(); }}
+		public override int SendPort { get { return ((IPEndPoint)sendSocket.Client.LocalEndPoint).Port; }}
+
         // -- Sending Functionality
 
         // Send packet

@@ -10,7 +10,7 @@ namespace UnityPacketPipeline
 	public delegate void ReceivePacketDelegate(byte[] a_buffer, IPEndPoint a_remote);
 
 
-	public class UPP_Base_TwoWaySocket
+	public abstract class UPP_Base_TwoWaySocket
 	{
 		// -- Member variables
 
@@ -62,11 +62,18 @@ namespace UnityPacketPipeline
 			Debug.Log("Listening");
 		}
 
+		// -- Getters and Setters
+
+		public abstract string ReceiveAddress { get; }
+		public abstract int ReceivePort { get; }
+
+		public abstract string SendAddress { get; }
+		public abstract int SendPort { get; }
 
 		// -- Callbacks
 
 		// Called when connection starts listening
-		public virtual void OnListening() { }
+		public virtual void OnListening() {}
 
 		// Called when connection sends packet
 		public virtual void OnSendPacket(byte[] a_buffer) { }

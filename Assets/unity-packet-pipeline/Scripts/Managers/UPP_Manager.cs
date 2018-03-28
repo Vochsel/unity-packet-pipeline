@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 using System.Net;
 using System.Net.Sockets;
@@ -17,6 +18,9 @@ namespace UnityPacketPipeline
 		UDP,
 		TCP
 	}
+
+	[System.Serializable]
+	public class OnSetupEvent : UnityEvent<string, string> { }
 
     /**
     *  Name: UPP_Manager
@@ -45,6 +49,8 @@ namespace UnityPacketPipeline
         public int Port = 4000;
 
 		public string AssociatedTag = "";
+
+		public OnSetupEvent OnSetup;
 		
         // -- Private Member Variables
 
@@ -90,7 +96,15 @@ namespace UnityPacketPipeline
 
 			// Register callback on packet received
 			twoWaySocket.ReceivePacketHook += ReceiveMessage;
+
+			OnSetup.Invoke (twoWaySocket.SendAddress, twoWaySocket.ReceiveAddress);
 		}
+
+		public void Test(string a_test, string a_test2)
+		{
+			Debug.Log(a_test + " : " + a_test2);
+		}
+
 
 		void CloseSocket()
 		{
