@@ -44,11 +44,8 @@ namespace UnityPacketPipeline
 			base.Open(a_remoteAddress, a_listenPort);
 
             // Create clients
-            receiveSocket = new UdpClient(a_listenPort);
-            sendSocket = new UdpClient();
-
-            // Connect sending socket
-            sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
+            OpenReceiveSocket(a_remoteAddress, a_listenPort);
+            OpenSendSocket(a_remoteAddress, a_listenPort);
 
             // Debug Logs
             Debug.Log("Receiving Socket: " + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Port);
@@ -67,12 +64,40 @@ namespace UnityPacketPipeline
             StopListening();
 
             // Close sockets
+            CloseSendSocket();
+            CloseReceiveSocket();
+        }
+
+        // -- Socket Lifecycle 
+
+        protected void OpenSendSocket(string a_remoteAddress, int a_listenPort) {
+            // Close send socket if already open
+            CloseSendSocket();
+
+            sendSocket = new UdpClient();
+
+            // Connect sending socket
+            sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
+        }
+
+        protected void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
+            // Close receive socket if already open
+            CloseReceiveSocket();
+
+            receiveSocket = new UdpClient(a_listenPort);
+        }
+
+        protected void CloseSendSocket() {
             if (sendSocket != null) sendSocket.Close();
+        }
+
+        protected void CloseReceiveSocket() {
             if (receiveSocket != null) receiveSocket.Close();
         }
 
 		// -- Getters and Setters
 
+        public override IPEndPoint ReceiveEndpoint { get { return (IPEndPoint)rec } }
 		public override string ReceiveAddress { get { return ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Address.ToString(); }}
 		public override int ReceivePort { get { return ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Port; }}
 
@@ -105,6 +130,9 @@ namespace UnityPacketPipeline
                     //IP Of sender... could be anyone
                     IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
                     byte[] data = receiveSocket.Receive(ref anyIP);
+
+                    // Connect to latest packet?
+                    if(anyIP != )
 
                     //Debug.Log("Rece sock: rece data: " + Encoding.UTF8.GetString(data));
 

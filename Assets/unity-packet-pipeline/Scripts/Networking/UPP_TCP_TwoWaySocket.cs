@@ -132,7 +132,7 @@ namespace UnityPacketPipeline
                         byte[] incomingData = new byte[length];
                         Array.Copy(bytes, 0, incomingData, 0, length);
 
-                        string msg = Encoding.ASCII.GetString(incomingData);
+                        //string msg = Encoding.ASCII.GetString(incomingData);
                         OnReceivePacket(incomingData, null);
 
                     }

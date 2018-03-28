@@ -114,7 +114,7 @@ namespace UnityPacketPipeline
 			// Register callback on packet received
 			twoWaySocket.ReceivePacketHook = ReceiveMessage;
 
-			OnSetup.Invoke (twoWaySocket.SendAddress, twoWaySocket.ReceiveAddress);
+			OnSetup.Invoke (twoWaySocket);
 		}
 
 		public void CloseManager()
