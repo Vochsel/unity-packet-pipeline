@@ -43,7 +43,20 @@ namespace UnityPacketPipeline
 				StartListening();
 
 				sendSocket = new TcpClient ();
-				sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
+				//sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
+
+				var result = sendSocket.BeginConnect(a_remoteAddress, a_listenPort, null, null);
+
+				var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(1));
+
+				if (!success)
+				{
+					throw new Exception("Failed to connect.");
+				}
+
+				// we have connected
+				sendSocket.EndConnect(result);
+
 				sendStream = sendSocket.GetStream();
 			} catch(SocketException e) {
 				Debug.Log ("Could not create sockets");

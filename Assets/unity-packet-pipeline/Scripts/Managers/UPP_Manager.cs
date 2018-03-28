@@ -100,12 +100,6 @@ namespace UnityPacketPipeline
 			OnSetup.Invoke (twoWaySocket.SendAddress, twoWaySocket.ReceiveAddress);
 		}
 
-		public void Test(string a_test, string a_test2)
-		{
-			Debug.Log(a_test + " : " + a_test2);
-		}
-
-
 		void CloseSocket()
 		{
 			if(twoWaySocket != null)
