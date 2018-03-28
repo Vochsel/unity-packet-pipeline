@@ -88,16 +88,16 @@ namespace UnityPacketPipeline
         }
 
         protected void CloseSendSocket() {
-            if (sendSocket != null) sendSocket.Close();
+            if (sendSocket != null) { sendSocket.Close(); sendSocket = null; }
         }
 
         protected void CloseReceiveSocket() {
-            if (receiveSocket != null) receiveSocket.Close();
+            if (receiveSocket != null) { receiveSocket.Close(); receiveSocket = null; }
         }
 
 		// -- Getters and Setters
 
-        public override IPEndPoint ReceiveEndpoint { get { return (IPEndPoint)rec } }
+        //public override IPEndPoint ReceiveEndpoint { get { return (IPEndPoint)rec } }
 		public override string ReceiveAddress { get { return ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Address.ToString(); }}
 		public override int ReceivePort { get { return ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Port; }}
 
@@ -132,7 +132,7 @@ namespace UnityPacketPipeline
                     byte[] data = receiveSocket.Receive(ref anyIP);
 
                     // Connect to latest packet?
-                    if(anyIP != )
+                    //if(anyIP != )
 
                     //Debug.Log("Rece sock: rece data: " + Encoding.UTF8.GetString(data));
 

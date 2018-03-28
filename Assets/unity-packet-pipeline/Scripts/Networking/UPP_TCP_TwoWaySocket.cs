@@ -84,9 +84,20 @@ namespace UnityPacketPipeline
 			// Close sockets
 			if (sendSocket != null) {
 				sendSocket.Close ();
-				sendStream.Close ();
+				sendSocket = null;
 			}
-			if (receiveSocket != null) receiveStream.Close();
+			if(sendStream != null) {
+				sendStream.Close ();
+				sendStream = null;
+			}
+			if (receiveSocket != null) {
+				receiveSocket.Stop();
+				receiveSocket = null;
+			}
+			if (receiveStream != null) { 
+				receiveStream.Close();
+				receiveStream = null;
+			}
 		}
 
 		// -- Sending Functionality

@@ -35,7 +35,7 @@ namespace UnityPacketPipeline
 	* Desc: Wrapper for manager setup completion
 	*/
 	[System.Serializable]
-	public class OnManagerSetupEvent : UnityEvent<UPP_Base_TwoWaySocket> { }
+	public class OnManagerSetupEvent : UnityEvent<UPP_Manager, UPP_Base_TwoWaySocket> { }
 
     /**
     *  Name: UPP_Manager
@@ -99,28 +99,33 @@ namespace UnityPacketPipeline
 
 		public void SetupManager(string a_ip, int a_port)
 		{
-			// Setup network connection
-			switch (Protocol) {
+			try {
+				// Setup network connection
+				switch (Protocol) {
 
-			case UPP_PacketProtocol.TCP:
-				twoWaySocket = new UPP_TCP_TwoWaySocket (a_ip, a_port);
-				break;
+				case UPP_PacketProtocol.TCP:
+					twoWaySocket = new UPP_TCP_TwoWaySocket (a_ip, a_port);
+					break;
 
-			default: case UPP_PacketProtocol.UDP:
-				twoWaySocket = new UPP_UDP_TwoWaySocket (a_ip, a_port);
-				break;
+				default: case UPP_PacketProtocol.UDP:
+					twoWaySocket = new UPP_UDP_TwoWaySocket (a_ip, a_port);
+					break;
+				}
+
+				// Register callback on packet received
+				twoWaySocket.ReceivePacketHook = ReceiveMessage;
+			} catch (SocketException e) {
+				Debug.LogFormat("Failed to setup UPP Manager {0}: {1}", this.name, e);
 			}
-
-			// Register callback on packet received
-			twoWaySocket.ReceivePacketHook = ReceiveMessage;
-
-			OnSetup.Invoke (twoWaySocket);
+			OnSetup.Invoke (this, twoWaySocket);
 		}
 
 		public void CloseManager()
 		{
 			if(twoWaySocket != null)
 				twoWaySocket.Close();
+
+			twoWaySocket = null;
 		}
 
 		public void RefreshManager() {
@@ -152,7 +157,7 @@ namespace UnityPacketPipeline
 				trackedComponents = new List<UPP_Component>(FindObjectsOfType<UPP_Component>());
 			}
 
-			Debug.LogFormat("[{0}] Populated with {1} components", this.name, trackedComponents.Count);
+			Debug.LogFormat("[{0}] Populated with {1} components", this.name + "-" + this.Protocol.ToString(), trackedComponents.Count);
 
 			// Connect all components to this
 			foreach (UPP_Component uppc in trackedComponents) {

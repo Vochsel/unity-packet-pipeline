@@ -59,7 +59,6 @@ namespace UnityPacketPipeline
 		// Handle listening
 		protected virtual void ListenCallback() {
 			OnListening();
-			Debug.Log("Listening");
 		}
 
 		// -- Getters and Setters
