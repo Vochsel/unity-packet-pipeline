@@ -36,14 +36,18 @@ namespace UnityPacketPipeline
 		// Handle thread startup
 		protected virtual void StartListening() {
 			// Create thread
-			receiveThread = new Thread(new ThreadStart(ListenCallback));
-			receiveThread.IsBackground = true;
+			try {
+				receiveThread = new Thread(new ThreadStart(ListenCallback));
+				receiveThread.IsBackground = true;
 
-			// Start thread
-			receiveThread.Start();
-			isListening = true;
-		
-			Debug.Log("Started listening");
+				// Start thread
+				receiveThread.Start();
+				isListening = true;
+			
+				Debug.Log("Started listening");
+			} catch(ThreadAbortException e) {
+				Debug.Log ("Listening aborted");
+			}
 
 		}
 

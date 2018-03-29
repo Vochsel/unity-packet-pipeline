@@ -47,11 +47,11 @@ namespace UnityPacketPipeline
 
 				var result = sendSocket.BeginConnect(a_remoteAddress, a_listenPort, null, null);
 
-				var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(1));
+				var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3));
 
 				if (!success)
 				{
-					throw new Exception("Failed to connect.");
+					Debug.Log("Failed to connect.");
 				}
 
 				// we have connected
