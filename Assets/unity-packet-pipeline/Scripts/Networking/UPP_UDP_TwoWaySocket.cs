@@ -70,9 +70,8 @@ namespace UnityPacketPipeline
 
         // -- Socket Lifecycle 
 
-        protected void OpenSendSocket(string a_remoteAddress, int a_listenPort) {
-            // Close send socket if already open
-            CloseSendSocket();
+		protected override void OpenSendSocket(string a_remoteAddress, int a_listenPort) {
+			base.CloseReceiveSocket ();
 
             sendSocket = new UdpClient();
 
@@ -80,18 +79,17 @@ namespace UnityPacketPipeline
             sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
         }
 
-        protected void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
-            // Close receive socket if already open
-            CloseReceiveSocket();
+		protected override void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
+			base.CloseReceiveSocket ();
 
             receiveSocket = new UdpClient(a_listenPort);
         }
 
-        protected void CloseSendSocket() {
+		protected override void CloseSendSocket() {
             if (sendSocket != null) { sendSocket.Close(); sendSocket = null; }
         }
 
-        protected void CloseReceiveSocket() {
+		protected override void CloseReceiveSocket() {
             if (receiveSocket != null) { receiveSocket.Close(); receiveSocket = null; }
         }
 

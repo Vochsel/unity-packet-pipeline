@@ -38,14 +38,13 @@ namespace UnityPacketPipeline
 
 			try {
 				// Create clients
-				receiveSocket = new TcpListener(IPAddress.Any, a_listenPort);
-				receiveSocket.Start();
+				OpenReceiveSocket(a_remoteAddress, a_listenPort);
+
 				StartListening();
 
-				sendSocket = new TcpClient ();
-				//sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
+				OpenSendSocket(a_remoteAddress, a_listenPort);
 
-				var result = sendSocket.BeginConnect(a_remoteAddress, a_listenPort, null, null);
+				/*var result = sendSocket.BeginConnect(a_remoteAddress, a_listenPort, null, null);
 
 				var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3));
 
@@ -55,7 +54,7 @@ namespace UnityPacketPipeline
 				}
 
 				// we have connected
-				sendSocket.EndConnect(result);
+				sendSocket.EndConnect(result);*/
 
 				sendStream = sendSocket.GetStream();
 			} catch(SocketException e) {
@@ -82,6 +81,30 @@ namespace UnityPacketPipeline
 			StopListening();
 
 			// Close sockets
+			CloseSendSocket();
+			CloseReceiveSocket ();
+		}
+
+
+		// -- Socket Lifecycle 
+
+		protected override void OpenSendSocket(string a_remoteAddress, int a_listenPort) {
+			base.OpenSendSocket (a_remoteAddress, a_listenPort);
+
+			sendSocket = new TcpClient ();
+			sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
+		}
+
+		protected override void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
+			base.OpenReceiveSocket (a_remoteAddress, a_listenPort);
+
+			receiveSocket = new TcpListener(IPAddress.Any, a_listenPort);
+			receiveSocket.Start();
+		}
+
+		protected override void CloseSendSocket() {
+			base.CloseReceiveSocket ();
+
 			if (sendSocket != null) {
 				sendSocket.Close ();
 				sendSocket = null;
@@ -90,6 +113,11 @@ namespace UnityPacketPipeline
 				sendStream.Close ();
 				sendStream = null;
 			}
+		}
+
+		protected override void CloseReceiveSocket() {
+			base.CloseReceiveSocket ();
+
 			if (receiveSocket != null) {
 				receiveSocket.Stop();
 				receiveSocket = null;

@@ -47,13 +47,14 @@ namespace UnityPacketPipeline
 				Debug.Log("Started listening");
 			} catch(ThreadAbortException e) {
 				Debug.Log ("Listening aborted");
+				Debug.Log (e);
 			}
 
 		}
 
 		// Handle thread closing
 		protected virtual void StopListening() {
-			if (receiveThread != null && receiveThread.IsAlive)
+			if (receiveThread != null /* && receiveThread.IsAlive*/)
 			{
 				isListening = false;
 				receiveThread.Abort();
@@ -72,6 +73,36 @@ namespace UnityPacketPipeline
 
 		public abstract string SendAddress { get; }
 		public abstract int SendPort { get; }
+
+
+		// -- Socket Lifecycle 
+
+		protected virtual void OpenSendSocket(string a_remoteAddress, int a_listenPort) {
+			// Close send socket if already open
+			CloseSendSocket();
+		}
+
+		protected virtual void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
+			// Close receive socket if already open
+			CloseReceiveSocket();
+		}
+
+		protected virtual void CloseSendSocket() {
+		}
+
+		protected virtual void CloseReceiveSocket() {
+		}
+
+		public void RefreshSendSocket(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000) {
+			CloseSendSocket ();
+			OpenSendSocket (a_remoteAddress, a_listenPort);
+		}
+
+		public void RefreshReceiveSocket(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000) {
+			CloseReceiveSocket ();
+			OpenReceiveSocket (a_remoteAddress, a_listenPort);
+		}
+
 
 		// -- Callbacks
 

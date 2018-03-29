@@ -133,6 +133,18 @@ namespace UnityPacketPipeline
 			SetupManager (RemoteIP, Port);
 		}
 
+		public void RefreshSendSockets()
+		{
+			twoWaySocket.RefreshSendSocket ();
+		}
+
+
+		public void RefreshReceiveSockets()
+		{
+			twoWaySocket.RefreshReceiveSocket ();
+		}
+
+
 		public void RefreshComponents()
 		{
 			// Clear old component list
