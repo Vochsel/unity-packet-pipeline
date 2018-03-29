@@ -135,13 +135,13 @@ namespace UnityPacketPipeline
 
 		public void RefreshSendSockets()
 		{
-			twoWaySocket.RefreshSendSocket ();
+			twoWaySocket.RefreshSendSocket (RemoteIP, Port);
 		}
 
 
 		public void RefreshReceiveSockets()
 		{
-			twoWaySocket.RefreshReceiveSocket ();
+			twoWaySocket.RefreshReceiveSocket (RemoteIP, Port);
 		}
 
 

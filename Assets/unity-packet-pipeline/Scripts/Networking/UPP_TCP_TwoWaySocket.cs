@@ -86,29 +86,34 @@ namespace UnityPacketPipeline
 		protected override bool OpenSendSocketAsync(string a_remoteAddress, int a_listenPort) {
 
 			sendSocket = new TcpClient ();
-			var result = sendSocket.BeginConnect(a_remoteAddress, a_listenPort, null, null);
 
-			sendSocket.BeginConnect(a_remoteAddress, a_listenPort, asyncResult =>
+
+			/*sendSocket.BeginConnect(a_remoteAddress, a_listenPort, asyncResult =>
 			{
 				sendSocket.EndConnect(asyncResult);
 				Debug.Log(asyncResult.ToString());
-					
-				Console.WriteLine("Socket connected");
-				sendStream = sendSocket.GetStream();
-			}, null);
 
-			/*var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3));
+				Debug.Log("Socket connected");
+					if(((IAsyncResult)asyncResult).IsCompleted)
+						sendStream = sendSocket.GetStream();
+			}, null);*/
 
-			if (!success)
+			var result = sendSocket.BeginConnect(a_remoteAddress, a_listenPort, null, null);
+			var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3), true);
+
+			if ( sendSocket.Connected )
 			{
-				Debug.Log("Failed to connect.");
-				return false;
+				sendSocket.EndConnect( result );
 			}
+			else 
+			{
+				// NOTE, MUST CLOSE THE SOCKET
 
-			// we have connected
-			sendSocket.EndConnect(result);*/
-
-
+				sendSocket.Close();
+				Debug.Log ("Failed to connect!");
+				//throw new ApplicationException("Failed to connect server.");
+			}
+				
 			return true;
 		}
 
