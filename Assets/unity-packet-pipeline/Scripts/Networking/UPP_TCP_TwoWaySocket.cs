@@ -104,6 +104,8 @@ namespace UnityPacketPipeline
 			if ( sendSocket.Connected )
 			{
 				sendSocket.EndConnect( result );
+				sendStream = sendSocket.GetStream();
+				Debug.Log("Send Socket: " + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Port);
 			}
 			else 
 			{
@@ -122,6 +124,9 @@ namespace UnityPacketPipeline
 
 			receiveSocket = new TcpListener(IPAddress.Any, a_listenPort);
 			receiveSocket.Start();
+
+			Debug.Log("Receiving Socket: " + ((IPEndPoint)receiveSocket.LocalEndpoint).Address + ":" + ((IPEndPoint)receiveSocket.LocalEndpoint).Port);
+
 		}
 
 		protected override void CloseSendSocket() {

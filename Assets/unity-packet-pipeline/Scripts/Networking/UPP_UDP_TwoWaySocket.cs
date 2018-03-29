@@ -47,10 +47,6 @@ namespace UnityPacketPipeline
             OpenReceiveSocket(a_remoteAddress, a_listenPort);
             OpenSendSocket(a_remoteAddress, a_listenPort);
 
-            // Debug Logs
-            Debug.Log("Receiving Socket: " + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Port);
-            Debug.Log("Send Socket: " + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Port);
-
             // Begin listening thread
             StartListening();
         }
@@ -77,12 +73,16 @@ namespace UnityPacketPipeline
 
             // Connect sending socket
             sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
+
+			Debug.Log("Send Socket: " + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Port);
         }
 
 		protected override void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
 			base.CloseReceiveSocket ();
 
             receiveSocket = new UdpClient(a_listenPort);
+			// Debug Logs
+			Debug.Log("Receiving Socket: " + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)receiveSocket.Client.LocalEndPoint).Port);
         }
 
 		protected override void CloseSendSocket() {
