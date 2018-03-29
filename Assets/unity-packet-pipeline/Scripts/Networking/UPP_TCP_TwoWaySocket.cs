@@ -42,21 +42,7 @@ namespace UnityPacketPipeline
 
 				StartListening();
 
-				OpenSendSocket(a_remoteAddress, a_listenPort);
-
-				/*var result = sendSocket.BeginConnect(a_remoteAddress, a_listenPort, null, null);
-
-				var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3));
-
-				if (!success)
-				{
-					Debug.Log("Failed to connect.");
-				}
-
-				// we have connected
-				sendSocket.EndConnect(result);*/
-
-				sendStream = sendSocket.GetStream();
+				OpenSendSocketAsync(a_remoteAddress, a_listenPort);
 			} catch(SocketException e) {
 				Debug.Log ("Could not create sockets");
 				Debug.Log (e);
@@ -93,6 +79,37 @@ namespace UnityPacketPipeline
 
 			sendSocket = new TcpClient ();
 			sendSocket.Connect(new IPEndPoint(IPAddress.Parse(a_remoteAddress), a_listenPort));
+
+			sendStream = sendSocket.GetStream();
+		}
+
+		protected override bool OpenSendSocketAsync(string a_remoteAddress, int a_listenPort) {
+
+			sendSocket = new TcpClient ();
+			var result = sendSocket.BeginConnect(a_remoteAddress, a_listenPort, null, null);
+
+			sendSocket.BeginConnect(a_remoteAddress, a_listenPort, asyncResult =>
+			{
+				sendSocket.EndConnect(asyncResult);
+				Debug.Log(asyncResult.ToString());
+					
+				Console.WriteLine("Socket connected");
+				sendStream = sendSocket.GetStream();
+			}, null);
+
+			/*var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3));
+
+			if (!success)
+			{
+				Debug.Log("Failed to connect.");
+				return false;
+			}
+
+			// we have connected
+			sendSocket.EndConnect(result);*/
+
+
+			return true;
 		}
 
 		protected override void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {

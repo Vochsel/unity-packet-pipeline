@@ -82,9 +82,24 @@ namespace UnityPacketPipeline
 			CloseSendSocket();
 		}
 
+		protected virtual bool OpenSendSocketAsync(string a_remoteAddress, int a_listenPort) {
+			// Close send socket if already open
+			CloseSendSocket();
+
+			return true;
+		}
+
+
 		protected virtual void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
 			// Close receive socket if already open
 			CloseReceiveSocket();
+		}
+
+		protected virtual bool OpenReceiveSocketAsync(string a_remoteAddress, int a_listenPort) {
+			// Close receive socket if already open
+			CloseReceiveSocket();
+
+			return true;
 		}
 
 		protected virtual void CloseSendSocket() {
@@ -95,7 +110,7 @@ namespace UnityPacketPipeline
 
 		public void RefreshSendSocket(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000) {
 			CloseSendSocket ();
-			OpenSendSocket (a_remoteAddress, a_listenPort);
+			OpenSendSocketAsync (a_remoteAddress, a_listenPort);
 		}
 
 		public void RefreshReceiveSocket(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000) {
