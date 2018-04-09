@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -742,11 +742,11 @@ Prefab:
     - target: {fileID: 114020124132115766, guid: 1876363e64a90264cb49a9b1bb1e6e8f,
         type: 2}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1309592317654090, guid: 1876363e64a90264cb49a9b1bb1e6e8f, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1876363e64a90264cb49a9b1bb1e6e8f, type: 2}
@@ -1063,6 +1063,10 @@ Prefab:
         type: 2}
       propertyPath: RemoteIP
       value: 127.0.0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1309592317654090, guid: 1876363e64a90264cb49a9b1bb1e6e8f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1876363e64a90264cb49a9b1bb1e6e8f, type: 2}

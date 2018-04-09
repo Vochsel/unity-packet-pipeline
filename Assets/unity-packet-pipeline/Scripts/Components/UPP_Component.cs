@@ -39,7 +39,7 @@ namespace UnityPacketPipeline
         // -- Internal Functions
 
         // Send Data Function
-		protected virtual void SendData(string a_data) { connectedManager.SendComponent(this, a_data); }
+		protected virtual void SendData(string a_data) { if(IsConnected()) connectedManager.SendComponent(this, a_data); }
 
         // Called when data recevied on this component
 		public virtual void ReceiveData(string a_data) { latestMessage = a_data; }

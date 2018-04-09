@@ -26,6 +26,15 @@ namespace UnityPacketPipeline
 		TCP
 	}
 
+    [System.Serializable]
+    public enum UPP_ManagerStatus
+    {
+        CONNECTED,
+        CONNECTING,
+        CLOSED,
+        CLOSING
+    }
+
 
 	/**
 	* Name: OnSetupEvent
@@ -44,6 +53,7 @@ namespace UnityPacketPipeline
     *  Date: 28/03/18
     *  Desc: Unity component to manage tracked UPP_Components. Handles send and receive functionality for trackedComponents.
     */
+
     public class UPP_Manager : MonoBehaviour
     {
 
@@ -77,6 +87,15 @@ namespace UnityPacketPipeline
         // All components in the scene to track
         List<UPP_Component> trackedComponents;
 
+        private UPP_ManagerStatus _managerStatus = UPP_ManagerStatus.CLOSED;
+
+        public UPP_ManagerStatus ManagerStatus { get { return _managerStatus; } set { _managerStatus = value; } }
+
+        public UPP_Base_TwoWaySocket GetTwoWaySocket { get { return (twoWaySocket == null) ? null : twoWaySocket; } }
+
+        public string SendSocket { get { return (twoWaySocket != null && twoWaySocket.CanSend) ? (twoWaySocket.SendAddress + " : " + twoWaySocket.SendPort.ToString()) : "Disconnected!"; } }
+        public string ReceiveSocket { get { return (twoWaySocket != null && twoWaySocket.CanReceive) ? (twoWaySocket.ReceiveAddress + " : " + twoWaySocket.ReceivePort.ToString()): "Disconnected!"; } }
+
         // -- Unity Events
 
         // Link and register manager functionality
@@ -85,7 +104,9 @@ namespace UnityPacketPipeline
             // Store singleton instance
             MainUPPManager = this;
 
-			RefreshComponents ();
+            ManagerStatus = UPP_ManagerStatus.CLOSED;
+
+            RefreshComponents ();
 			SetupManager (RemoteIP, Port);
         }
 
@@ -94,6 +115,20 @@ namespace UnityPacketPipeline
 		{
 			CloseManager ();
 		}
+
+        void OnEnable()
+        {
+            if (twoWaySocket == null || !twoWaySocket.IsListening)
+            {
+                RefreshComponents();
+                SetupManager(RemoteIP, Port);
+            }
+        }
+
+        void OnDisable()
+        {
+            CloseManager();
+        }
 
 		// -- Lifecycle functionality
 
@@ -122,11 +157,15 @@ namespace UnityPacketPipeline
 
 		public void CloseManager()
 		{
-			if(twoWaySocket != null)
+            ManagerStatus = UPP_ManagerStatus.CLOSING;
+
+            if (twoWaySocket != null)
 				twoWaySocket.Close();
 
 			twoWaySocket = null;
-		}
+
+            ManagerStatus = UPP_ManagerStatus.CLOSED;
+        }
 
 		public void RefreshManager() {
 			CloseManager ();
@@ -147,8 +186,10 @@ namespace UnityPacketPipeline
 
 		public void RefreshComponents()
 		{
-			// Clear old component list
-			if (trackedComponents != null)
+            ManagerStatus = UPP_ManagerStatus.CONNECTING;
+
+            // Clear old component list
+            if (trackedComponents != null)
 				trackedComponents.Clear ();
 			
 			// Populate tracked components
@@ -175,7 +216,9 @@ namespace UnityPacketPipeline
 			foreach (UPP_Component uppc in trackedComponents) {
 				uppc.Connect (this);
 			}
-		}
+
+            ManagerStatus = UPP_ManagerStatus.CONNECTED;
+        }
 
 		public void ChangeRemoteIP (string a_ip)
 		{
@@ -188,6 +231,19 @@ namespace UnityPacketPipeline
         // Send packet with prepended component ID in buffer
         public void SendComponent(UPP_Component a_component, byte[] a_message)
         {
+            // Pre checks
+            if (a_component == null)
+                return;
+
+            if (twoWaySocket == null)
+            {
+                CloseManager();
+                return;
+            }
+
+            if (a_message.Length <= 0)
+                return;
+
             // Create new buffer
             byte[] buffer = new byte[a_message.Length + 1];
 

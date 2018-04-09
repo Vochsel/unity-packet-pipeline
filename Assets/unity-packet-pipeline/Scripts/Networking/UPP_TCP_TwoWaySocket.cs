@@ -20,10 +20,13 @@ namespace UnityPacketPipeline
 
 		NetworkStream sendStream, receiveStream;
 
-		// -- Constructor
+        public override bool CanSend { get { return sendSocket != null; } }
+        public override bool CanReceive { get { return receiveSocket != null; } }
 
-		// Specific constructor to pass address and port
-		public UPP_TCP_TwoWaySocket(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000)
+        // -- Constructor
+
+        // Specific constructor to pass address and port
+        public UPP_TCP_TwoWaySocket(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000)
 		{
 			// Open connection
 			Open(a_remoteAddress, a_listenPort);

@@ -22,9 +22,14 @@ namespace UnityPacketPipeline
 
 		protected Thread receiveThread;
 
-		// -- Open and Close
+        public virtual bool CanSend { get { return false; } }
+        public virtual bool CanReceive { get { return false; } }
 
-		public virtual void Open(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000) {}
+        public bool IsListening { get { if (receiveThread == null) return false; else return receiveThread.IsAlive; } }
+
+        // -- Open and Close
+
+        public virtual void Open(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000) {}
 
 		public virtual void Close() {}
 

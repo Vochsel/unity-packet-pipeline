@@ -27,6 +27,11 @@ namespace UnityPacketPipeline
         // UDP Client to receive packets at specified PORT
         UdpClient receiveSocket = null;
 
+
+        public override bool CanSend { get { return sendSocket != null; } }
+        public override bool CanReceive { get { return receiveSocket != null; } }
+
+
         // -- Constructor
 
         // Specific constructor to pass address and port
