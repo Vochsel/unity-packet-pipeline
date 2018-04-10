@@ -105,9 +105,12 @@ namespace UnityPacketPipeline
             MainUPPManager = this;
 
             ManagerStatus = UPP_ManagerStatus.CLOSED;
-
-            RefreshComponents ();
-			SetupManager (RemoteIP, Port);
+            
+            if (twoWaySocket == null)
+            {
+                RefreshComponents();
+                SetupManager(RemoteIP, Port);
+            }
         }
 
 		// Clean up network connection
@@ -118,7 +121,7 @@ namespace UnityPacketPipeline
 
         void OnEnable()
         {
-            if (twoWaySocket == null || !twoWaySocket.IsListening)
+            if (twoWaySocket == null)
             {
                 RefreshComponents();
                 SetupManager(RemoteIP, Port);

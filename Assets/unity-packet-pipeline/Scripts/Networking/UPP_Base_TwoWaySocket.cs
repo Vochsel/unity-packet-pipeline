@@ -22,10 +22,15 @@ namespace UnityPacketPipeline
 
 		protected Thread receiveThread;
 
+        // -- Helper variables
+
         public virtual bool CanSend { get { return false; } }
         public virtual bool CanReceive { get { return false; } }
 
         public bool IsListening { get { if (receiveThread == null) return false; else return receiveThread.IsAlive; } }
+
+        public int PacketsSent = 0;
+        public int PacketsReceived = 0;
 
         // -- Open and Close
 
@@ -34,7 +39,15 @@ namespace UnityPacketPipeline
 		public virtual void Close() {}
 
 		// -- Send Functionality
-		public virtual void SendPacket(byte[] a_buffer) {}
+		public virtual void SendPacket(byte[] a_buffer) {
+            if (!CanSend)
+            {
+                Debug.Log(string.Format("Cannot send packet! [{0}]", a_buffer));
+                return;
+            }
+
+            PacketsSent++;
+        }
 
 		// -- Listening Functionality
 
@@ -107,11 +120,13 @@ namespace UnityPacketPipeline
 			return true;
 		}
 
+
 		protected virtual void CloseSendSocket() {
 		}
 
 		protected virtual void CloseReceiveSocket() {
 		}
+
 
 		public void RefreshSendSocket(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000) {
 			CloseSendSocket ();
@@ -123,16 +138,21 @@ namespace UnityPacketPipeline
 			OpenReceiveSocket (a_remoteAddress, a_listenPort);
 		}
 
-
 		// -- Callbacks
 
 		// Called when connection starts listening
 		public virtual void OnListening() {}
 
 		// Called when connection sends packet
-		public virtual void OnSendPacket(byte[] a_buffer) { }
+		public virtual void OnSendPacket(byte[] a_buffer) {
+        }
 
 		// Called when connection receives packet
-		public virtual void OnReceivePacket(byte[] a_buffer, IPEndPoint a_remote) { ReceivePacketHook(a_buffer, a_remote); }
+		public virtual void OnReceivePacket(byte[] a_buffer, IPEndPoint a_remote) {
+            
+            PacketsReceived++;
+
+            ReceivePacketHook(a_buffer, a_remote);
+        }
 	}
 }

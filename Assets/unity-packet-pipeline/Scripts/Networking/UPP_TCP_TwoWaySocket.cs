@@ -177,7 +177,13 @@ namespace UnityPacketPipeline
 		// Send packet
 		public override void SendPacket(byte[] a_buffer)
 		{
-			base.OnSendPacket (a_buffer);
+			base.SendPacket (a_buffer);
+
+            if (sendStream == null)
+            {
+                Debug.LogFormat("Send stream is null. Cannot send {0}", a_buffer);
+                return;
+            }
 
 			// Create new buffer
 			byte[] buffer = new byte[a_buffer.Length + 1];
@@ -222,8 +228,13 @@ namespace UnityPacketPipeline
 						byte[] incomingData = new byte[length];
 						MessageType mt = (MessageType)bytes [0];
 
-						//Debug.Log (mt);
-						if (mt == MessageType.CLOSE) {
+                        //Debug.Log (mt);
+                        if (mt == MessageType.OPEN)
+                        {
+
+                            break;
+                        }
+                        if (mt == MessageType.CLOSE) {
 							isOpen = false;
 							break;
 						}

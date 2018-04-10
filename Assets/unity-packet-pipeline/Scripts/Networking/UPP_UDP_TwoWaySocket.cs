@@ -112,7 +112,7 @@ namespace UnityPacketPipeline
         // Send packet
         public override void SendPacket(byte[] a_buffer)
         {
-			base.OnSendPacket (a_buffer);
+			base.SendPacket (a_buffer);
 
             sendSocket.Send(a_buffer, a_buffer.Length);
 
