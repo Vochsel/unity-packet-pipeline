@@ -206,7 +206,7 @@ namespace UnityPacketPipeline
 					if (go.GetComponent<UPP_Component> ()) {
 						//Account for multiple on the one object
 						foreach (UPP_Component uppc in go.GetComponents<UPP_Component>()) {
-                            if (!uppc.isActiveAndEnabled)
+                            if (!uppc.enabled)
                                 continue;
 
 							trackedComponents.Add (uppc);
