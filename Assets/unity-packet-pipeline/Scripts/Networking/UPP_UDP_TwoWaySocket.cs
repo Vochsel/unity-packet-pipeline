@@ -131,7 +131,7 @@ namespace UnityPacketPipeline
                 try
                 {
                     //IP Of sender... could be anyone
-                    IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
+                    IPEndPoint anyIP = new IPEndPoint(IPAddress.Parse(UPP_Utils.GetLocalIPAddress()), 0);
                     byte[] data = receiveSocket.Receive(ref anyIP);
 
                     // Connect to latest packet?

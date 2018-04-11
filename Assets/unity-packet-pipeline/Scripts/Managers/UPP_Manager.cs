@@ -137,7 +137,10 @@ namespace UnityPacketPipeline
 
 		public void SetupManager(string a_ip, int a_port)
 		{
-			try {
+            _managerStatus = UPP_ManagerStatus.CONNECTING;
+
+            try
+            {
 				// Setup network connection
 				switch (Protocol) {
 
@@ -150,15 +153,19 @@ namespace UnityPacketPipeline
 					break;
 				}
 
-				// Register callback on packet received
-				twoWaySocket.ReceivePacketHook = ReceiveMessage;
+                twoWaySocket.PacketsSent = 0;
+                twoWaySocket.PacketsReceived = 0;
+                // Register callback on packet received
+                twoWaySocket.ReceivePacketHook = ReceiveMessage;
 			} catch (SocketException e) {
 				Debug.LogFormat("Failed to setup UPP Manager {0}: {1}", this.name, e);
 			}
 			OnSetup.Invoke (this, twoWaySocket);
-		}
+            _managerStatus = UPP_ManagerStatus.CONNECTED;
 
-		public void CloseManager()
+        }
+
+        public void CloseManager()
 		{
             _managerStatus = UPP_ManagerStatus.CLOSING;
 
@@ -189,7 +196,6 @@ namespace UnityPacketPipeline
 
 		public void RefreshComponents()
 		{
-            _managerStatus = UPP_ManagerStatus.CONNECTING;
 
             // Clear old component list
             if (trackedComponents != null)
@@ -225,7 +231,6 @@ namespace UnityPacketPipeline
 				uppc.Connect (this);
 			}
 
-            _managerStatus = UPP_ManagerStatus.CONNECTED;
         }
 
 		public void ChangeRemoteIP (string a_ip)

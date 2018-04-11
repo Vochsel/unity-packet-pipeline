@@ -122,7 +122,7 @@ namespace UnityPacketPipeline
 		protected override void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
 			base.OpenReceiveSocket (a_remoteAddress, a_listenPort);
 
-			receiveSocket = new TcpListener(IPAddress.Any, a_listenPort);
+			receiveSocket = new TcpListener(IPAddress.Parse(UPP_Utils.GetLocalIPAddress()), a_listenPort);
 			receiveSocket.Start();
 
 			Debug.Log("Receiving Socket: " + ((IPEndPoint)receiveSocket.LocalEndpoint).Address + ":" + ((IPEndPoint)receiveSocket.LocalEndpoint).Port);

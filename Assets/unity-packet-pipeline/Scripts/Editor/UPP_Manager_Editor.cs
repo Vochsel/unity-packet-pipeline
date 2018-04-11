@@ -4,9 +4,6 @@ using UnityEngine;
 using UnityEditor;
 
 using UnityPacketPipeline;
-using System.Net;
-using System.Net.Sockets;
-using System;
 
 [CustomEditor(typeof(UPP_Manager))]
 [CanEditMultipleObjects]
@@ -24,7 +21,7 @@ public class UPP_Manager_Editor : Editor {
         styleGreen.normal.textColor = new Color(0.1f, 0.5f, 0.05f);
         styleRed.normal.textColor = new Color(0.6f, 0.1f, 0.05f);
 
-        localIP = GetLocalIPAddress();
+        localIP = UPP_Utils.GetLocalIPAddress();
     }
     public void OnEditorUpdate()
     {
@@ -104,16 +101,5 @@ public class UPP_Manager_Editor : Editor {
         EditorUtility.SetDirty(target);
     }
 
-    public static string GetLocalIPAddress()
-    {
-        var host = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (var ip in host.AddressList)
-        {
-            if (ip.AddressFamily == AddressFamily.InterNetwork)
-            {
-                return ip.ToString();
-            }
-        }
-        throw new Exception("No network adapters with an IPv4 address in the system!");
-    }
+   
 }

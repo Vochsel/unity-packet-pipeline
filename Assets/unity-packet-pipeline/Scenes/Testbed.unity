@@ -288,7 +288,18 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1511350658}
-        m_MethodName: RefreshSendSockets
+        m_MethodName: RefreshManager
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 171952680}
+        m_MethodName: RefreshManager
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -333,6 +344,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 153537832}
+--- !u!114 &171952680 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114020124132115766, guid: 1876363e64a90264cb49a9b1bb1e6e8f,
+    type: 2}
+  m_PrefabInternal: {fileID: 975827904}
+  m_Script: {fileID: 11500000, guid: 06c4fa9998fe1cd48b9ca199cd09ab2c, type: 3}
 --- !u!1 &554904781
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,7 +449,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &716190137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -746,7 +763,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1309592317654090, guid: 1876363e64a90264cb49a9b1bb1e6e8f, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1876363e64a90264cb49a9b1bb1e6e8f, type: 2}
