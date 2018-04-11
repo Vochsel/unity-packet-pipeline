@@ -43,7 +43,7 @@ namespace UnityPacketPipeline
 				// Create clients
 				OpenReceiveSocket(a_remoteAddress, a_listenPort);
 
-				StartListening();
+				
 
 				OpenSendSocketAsync(a_remoteAddress, a_listenPort);
 			} catch(SocketException e) {
@@ -97,7 +97,16 @@ namespace UnityPacketPipeline
 					//if(((IAsyncResult)asyncResult).IsCompleted) 
 						sendStream = sendSocket.GetStream();
 					Debug.Log("Send Socket: " + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Address + ":" + ((IPEndPoint)sendSocket.Client.LocalEndPoint).Port);
-			}, null);
+
+                // Create new buffer
+                byte[] buffer = new byte[1];
+
+                // Prepend ID
+                buffer[0] = (byte)MessageType.OPEN;   //TODO: Fix unsafe case
+
+
+                sendStream.Write(buffer, 0, buffer.Length);
+            }, null);
 
 			/*var result = sendSocket.BeginConnect(a_remoteAddress, a_listenPort, null, null);
 			var success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(3), true);
@@ -121,12 +130,12 @@ namespace UnityPacketPipeline
 		}
 
 		protected override void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
-			base.OpenReceiveSocket (a_remoteAddress, a_listenPort);
 
 			receiveSocket = new TcpListener(IPAddress.Parse(UPP_Utils.GetLocalIPAddress()), a_listenPort);
 			receiveSocket.Start();
 
 			Debug.Log("Receiving Socket: " + ((IPEndPoint)receiveSocket.LocalEndpoint).Address + ":" + ((IPEndPoint)receiveSocket.LocalEndpoint).Port);
+			base.OpenReceiveSocket (a_remoteAddress, a_listenPort);
 
 		}
 
@@ -175,14 +184,19 @@ namespace UnityPacketPipeline
 			DATA
 		};
 
-		// Send packet
-		public override void SendPacket(byte[] a_buffer)
-		{
-			base.SendPacket (a_buffer);
+        // Send packet
+        public override void SendPacket(byte[] a_buffer)
+        {
+            base.SendPacket(a_buffer);
 
             if (sendStream == null)
             {
                 Debug.LogFormat("Send stream is null. Cannot send {0}", a_buffer);
+                return;
+            }
+
+            if (!sendStream.CanWrite) {
+                Debug.Log("Send stream cannot write!");
                 return;
             }
 
