@@ -83,8 +83,9 @@ namespace UnityPacketPipeline
 		}
 
 		protected override bool OpenSendSocketAsync(string a_remoteAddress, int a_listenPort) {
+            base.OpenSendSocketAsync(a_remoteAddress, a_listenPort);
 
-			sendSocket = new TcpClient ();
+            sendSocket = new TcpClient ();
 
 
 			sendSocket.BeginConnect(a_remoteAddress, a_listenPort, asyncResult =>
@@ -130,7 +131,7 @@ namespace UnityPacketPipeline
 		}
 
 		protected override void CloseSendSocket() {
-			base.CloseReceiveSocket ();
+			base.CloseSendSocket();
 
 			if (sendStream != null) {
 				// Create new buffer
@@ -263,7 +264,7 @@ namespace UnityPacketPipeline
 		protected override void ListenCallback()
 		{
 			base.ListenCallback ();
-			while (isListening) {
+			while (IsListening) {
 				Socket sc = receiveSocket.AcceptSocket ();
 				ThreadPool.QueueUserWorkItem(HandleListen, sc);
 			}

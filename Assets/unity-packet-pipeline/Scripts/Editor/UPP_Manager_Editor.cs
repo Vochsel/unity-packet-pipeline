@@ -96,6 +96,16 @@ public class UPP_Manager_Editor : Editor {
             EditorGUILayout.LabelField("No connected components");
         }
 
+        if(GUILayout.Button("Refresh Sender"))
+        {
+            uppm.RefreshSendSockets();
+        }
+
+        if(GUILayout.Button("Refresh Receiver"))
+        {
+            uppm.RefreshReceiveSockets();
+        }
+
 
 
         EditorUtility.SetDirty(target);

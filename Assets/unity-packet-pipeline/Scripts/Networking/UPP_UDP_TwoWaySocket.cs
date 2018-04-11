@@ -72,7 +72,7 @@ namespace UnityPacketPipeline
         // -- Socket Lifecycle 
 
 		protected override void OpenSendSocket(string a_remoteAddress, int a_listenPort) {
-			base.CloseReceiveSocket ();
+			base.OpenSendSocket(a_remoteAddress, a_listenPort);
 
             sendSocket = new UdpClient();
 
@@ -83,7 +83,7 @@ namespace UnityPacketPipeline
         }
 
 		protected override void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
-			base.CloseReceiveSocket ();
+			base.OpenReceiveSocket(a_remoteAddress, a_listenPort);
 
             receiveSocket = new UdpClient(a_listenPort);
 			// Debug Logs
@@ -91,10 +91,12 @@ namespace UnityPacketPipeline
         }
 
 		protected override void CloseSendSocket() {
+            base.CloseSendSocket();
             if (sendSocket != null) { sendSocket.Close(); sendSocket = null; }
         }
 
 		protected override void CloseReceiveSocket() {
+            base.CloseReceiveSocket();
             if (receiveSocket != null) { receiveSocket.Close(); receiveSocket = null; }
         }
 
@@ -126,7 +128,7 @@ namespace UnityPacketPipeline
         {
 			base.ListenCallback ();
 
-            while (isListening)
+            while (IsListening)
             {
                 try
                 {

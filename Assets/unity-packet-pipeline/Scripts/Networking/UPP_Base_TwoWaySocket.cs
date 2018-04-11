@@ -16,11 +16,8 @@ namespace UnityPacketPipeline
 
 		// Instance of delegate fired when packet received
 		public ReceivePacketDelegate ReceivePacketHook;
-
-		// Bool which controls if the connection is listening
-		protected bool isListening = false;
-
-		protected Thread receiveThread;
+        
+		public Thread receiveThread;
 
         // -- Helper variables
 
@@ -60,7 +57,6 @@ namespace UnityPacketPipeline
 
 				// Start thread
 				receiveThread.Start();
-				isListening = true;
 			
 				Debug.Log("Started listening");
 			} catch(ThreadAbortException e) {
@@ -74,9 +70,11 @@ namespace UnityPacketPipeline
 		protected virtual void StopListening() {
 			if (receiveThread != null /* && receiveThread.IsAlive*/)
 			{
-				isListening = false;
+                Debug.Log("Aborting!");
 				receiveThread.Abort();
-			}
+                receiveThread = null;
+
+            }
 		}
 
 		// Handle listening
@@ -97,12 +95,12 @@ namespace UnityPacketPipeline
 
 		protected virtual void OpenSendSocket(string a_remoteAddress, int a_listenPort) {
 			// Close send socket if already open
-			CloseSendSocket();
+			//CloseSendSocket();
 		}
 
 		protected virtual bool OpenSendSocketAsync(string a_remoteAddress, int a_listenPort) {
 			// Close send socket if already open
-			CloseSendSocket();
+			//CloseSendSocket();
 
 			return true;
 		}
@@ -110,12 +108,12 @@ namespace UnityPacketPipeline
 
 		protected virtual void OpenReceiveSocket(string a_remoteAddress, int a_listenPort) {
 			// Close receive socket if already open
-			CloseReceiveSocket();
+			//CloseReceiveSocket();
 		}
 
 		protected virtual bool OpenReceiveSocketAsync(string a_remoteAddress, int a_listenPort) {
 			// Close receive socket if already open
-			CloseReceiveSocket();
+			//CloseReceiveSocket();
 
 			return true;
 		}

@@ -133,6 +133,11 @@ namespace UnityPacketPipeline
             CloseManager();
         }
 
+        void Update()
+        {
+            Debug.Log(twoWaySocket.receiveThread.IsAlive);
+        }
+
 		// -- Lifecycle functionality
 
 		public void SetupManager(string a_ip, int a_port)
