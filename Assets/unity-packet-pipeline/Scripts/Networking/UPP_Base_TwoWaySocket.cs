@@ -129,7 +129,7 @@ namespace UnityPacketPipeline
 
 		public void RefreshSendSocket(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000) {
 			CloseSendSocket ();
-			OpenSendSocket (a_remoteAddress, a_listenPort);
+			OpenSendSocketAsync (a_remoteAddress, a_listenPort);
 		}
 
 		public void RefreshReceiveSocket(string a_remoteAddress = "127.0.0.1", int a_listenPort = 3000) {

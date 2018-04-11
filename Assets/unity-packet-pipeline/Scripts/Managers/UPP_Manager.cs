@@ -135,7 +135,7 @@ namespace UnityPacketPipeline
 
         void Update()
         {
-            Debug.Log(twoWaySocket.receiveThread.IsAlive);
+            //Debug.Log(twoWaySocket.receiveThread.IsAlive);
         }
 
 		// -- Lifecycle functionality
