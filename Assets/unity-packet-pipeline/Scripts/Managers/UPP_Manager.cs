@@ -87,6 +87,8 @@ namespace UnityPacketPipeline
         // All components in the scene to track
         List<UPP_Component> trackedComponents;
 
+        public List<UPP_Component> ConnectedComponents { get { return trackedComponents; } }
+
         private UPP_ManagerStatus _managerStatus = UPP_ManagerStatus.CLOSED;
 
         public UPP_ManagerStatus ManagerStatus { get { return _managerStatus; } set { _managerStatus = value; } }
@@ -103,13 +105,11 @@ namespace UnityPacketPipeline
         {
             // Store singleton instance
             MainUPPManager = this;
-
-            ManagerStatus = UPP_ManagerStatus.CLOSED;
-            
+                        
             if (twoWaySocket == null)
             {
-                RefreshComponents();
                 SetupManager(RemoteIP, Port);
+                RefreshComponents();
             }
         }
 
@@ -123,8 +123,8 @@ namespace UnityPacketPipeline
         {
             if (twoWaySocket == null)
             {
-                RefreshComponents();
                 SetupManager(RemoteIP, Port);
+                RefreshComponents();
             }
         }
 
@@ -160,14 +160,14 @@ namespace UnityPacketPipeline
 
 		public void CloseManager()
 		{
-            ManagerStatus = UPP_ManagerStatus.CLOSING;
+            _managerStatus = UPP_ManagerStatus.CLOSING;
 
             if (twoWaySocket != null)
 				twoWaySocket.Close();
 
 			twoWaySocket = null;
 
-            ManagerStatus = UPP_ManagerStatus.CLOSED;
+            _managerStatus = UPP_ManagerStatus.CLOSED;
         }
 
 		public void RefreshManager() {
@@ -189,7 +189,7 @@ namespace UnityPacketPipeline
 
 		public void RefreshComponents()
 		{
-            ManagerStatus = UPP_ManagerStatus.CONNECTING;
+            _managerStatus = UPP_ManagerStatus.CONNECTING;
 
             // Clear old component list
             if (trackedComponents != null)
@@ -200,10 +200,15 @@ namespace UnityPacketPipeline
 				trackedComponents = new List<UPP_Component> ();
 				GameObject[] gos = GameObject.FindGameObjectsWithTag (AssociatedTag);
 				foreach (GameObject go in gos) {
+                    if (!go.activeSelf)
+                        continue;
 					//If has UPP_Component, add
 					if (go.GetComponent<UPP_Component> ()) {
 						//Account for multiple on the one object
 						foreach (UPP_Component uppc in go.GetComponents<UPP_Component>()) {
+                            if (!uppc.isActiveAndEnabled)
+                                continue;
+
 							trackedComponents.Add (uppc);
 						}
 					}
@@ -220,7 +225,7 @@ namespace UnityPacketPipeline
 				uppc.Connect (this);
 			}
 
-            ManagerStatus = UPP_ManagerStatus.CONNECTED;
+            _managerStatus = UPP_ManagerStatus.CONNECTED;
         }
 
 		public void ChangeRemoteIP (string a_ip)
